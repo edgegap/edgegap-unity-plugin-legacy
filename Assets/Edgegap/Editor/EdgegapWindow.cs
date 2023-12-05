@@ -56,7 +56,8 @@ public class EdgegapWindow : EditorWindow
     private Label _connectionStatusLabel;
     private VisualElement _serverDataContainer;
 
-    [MenuItem("Edgegap/Server Management")]
+    [Obsolete("See EdgegapWindowV2.ShowEdgegapToolWindow()")]
+    // [MenuItem("Edgegap/Server Management")]
     public static void ShowEdgegapToolWindow()
     {
         EdgegapWindow window = GetWindow<EdgegapWindow>();

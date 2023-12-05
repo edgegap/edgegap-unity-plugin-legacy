@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Edgegap
 {
+    [Obsolete("Use UpdateAppVersionRequest")]
     public struct AppVersionUpdatePatchData
     {
 

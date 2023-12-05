@@ -11,7 +11,7 @@ namespace Edgegap
     {
         public static Label GetHeader(string text)
         {
-            var header = new Label(text);
+            Label header = new Label(text);
             header.AddToClassList("label__header");
 
             return header;
@@ -19,14 +19,14 @@ namespace Edgegap
 
         public static VisualElement GetHeaderRow()
         {
-            var row = new VisualElement();
+            VisualElement row = new VisualElement();
             row.AddToClassList("row__port-table");
             row.AddToClassList("label__header");
 
             row.Add(new Label("Name"));
             row.Add(new Label("External"));
             row.Add(new Label("Internal"));
-            row.Add(new Label("Protocol"));
+            row.Add(new Label("ProtocolStr"));
             row.Add(new Label("Link"));
 
             return row;
@@ -34,7 +34,7 @@ namespace Edgegap
 
         public static VisualElement GetRowFromPortResponse(PortMapping port)
         {
-            var row = new VisualElement();
+            VisualElement row = new VisualElement();
             row.AddToClassList("row__port-table");
             row.AddToClassList("focusable");
 
@@ -50,7 +50,7 @@ namespace Edgegap
 
         public static Button GetCopyButton(string btnText, string copiedText)
         {
-            var copyBtn = new Button();
+            Button copyBtn = new Button();
             copyBtn.text = btnText;
             copyBtn.clickable.clicked += () => GUIUtility.systemCopyBuffer = copiedText;
 
@@ -59,7 +59,7 @@ namespace Edgegap
 
         public static Button GetLinkButton(string btnText, string targetUrl)
         {
-            var copyBtn = new Button();
+            Button copyBtn = new Button();
             copyBtn.text = btnText;
             copyBtn.clickable.clicked += () => UnityEngine.Application.OpenURL(targetUrl);
 
@@ -119,12 +119,12 @@ namespace Edgegap
                 deploymentDashboardUrl = $"{dashboardUrl}/arbitrium/deployment/read/{requestId}/";
             }
 
-            var container = new VisualElement();
+            VisualElement container = new VisualElement();
             container.AddToClassList("container");
 
             container.Add(EdgegapServerDataManagerUtils.GetHeader("Server Status"));
 
-            var row = new VisualElement();
+            VisualElement row = new VisualElement();
             row.AddToClassList("row__status");
 
             // Status pill
@@ -152,12 +152,12 @@ namespace Edgegap
         {
             string serverDns = _serverData.Fqdn;
 
-            var container = new VisualElement();
+            VisualElement container = new VisualElement();
             container.AddToClassList("container");
 
             container.Add(EdgegapServerDataManagerUtils.GetHeader("Server DNS"));
 
-            var row = new VisualElement();
+            VisualElement row = new VisualElement();
             row.AddToClassList("row__dns");
             row.AddToClassList("focusable");
 
@@ -173,13 +173,13 @@ namespace Edgegap
         {
             List<PortMapping> serverPorts = _serverData.Ports.Values.ToList();
 
-            var container = new VisualElement();
+            VisualElement container = new VisualElement();
             container.AddToClassList("container");
 
-            container.Add(EdgegapServerDataManagerUtils.GetHeader("Server Ports"));
+            container.Add(EdgegapServerDataManagerUtils.GetHeader("Server PortsDict"));
             container.Add(EdgegapServerDataManagerUtils.GetHeaderRow());
 
-            var portList = new VisualElement();
+            VisualElement portList = new VisualElement();
 
             if (serverPorts.Count > 0)
             {
@@ -200,7 +200,7 @@ namespace Edgegap
 
         public static VisualElement GetServerDataVisualTree()
         {
-            var serverDataTree = new VisualElement();
+            VisualElement serverDataTree = new VisualElement();
             serverDataTree.styleSheets.Add(_serverDataStylesheet);
 
             bool hasServerData = _serverData != null;
@@ -217,7 +217,7 @@ namespace Edgegap
                 }
                 else
                 {
-                    serverDataTree.Add(EdgegapServerDataManagerUtils.GetInfoText("Additionnal information will be displayed when the server is ready."));
+                    serverDataTree.Add(EdgegapServerDataManagerUtils.GetInfoText("Additional information will be displayed when the server is ready."));
                 }
             }
             else

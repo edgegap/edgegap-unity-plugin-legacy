@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -28,7 +29,18 @@ namespace Edgegap
                 locationPathName = "Builds/EdgegapServer/ServerBuild"
             };
 
-            return BuildPipeline.BuildPlayer(options);
+            BuildReport buildReport = null;
+            try
+            {
+                buildReport = BuildPipeline.BuildPlayer(options);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error: {e}");
+                throw;
+            }
+
+            return buildReport;
         }
 
         public static async Task<bool> DockerSetupAndInstalationCheck()
@@ -103,37 +115,6 @@ namespace Edgegap
             throw new NotImplementedException();
         }
 
-        public static async Task DockerBuild(string registry, string imageRepo, string tag, Action<string> onStatusUpdate)
-        {
-            string realErrorMessage = null;
-            await RunCommand("docker.exe", $"build -t {registry}/{imageRepo}:{tag} .", onStatusUpdate,
-                (msg) =>
-                {
-                    if (msg.Contains("ERROR"))
-                    {
-                        realErrorMessage = msg;
-                    }
-                    onStatusUpdate(msg);
-                });
-
-            if(realErrorMessage != null)
-            {
-                throw new Exception(realErrorMessage);
-            }
-        }
-
-        public static async Task<bool> DockerPush(string registry, string imageRepo, string tag, Action<string> onStatusUpdate)
-        {
-            string error = string.Empty;
-            await RunCommand("docker.exe", $"push {registry}/{imageRepo}:{tag}", onStatusUpdate, (msg) => error += msg + "\n");
-            if (!string.IsNullOrEmpty(error))
-            {
-                Debug.LogError(error);
-                return false;
-            }
-            return true;
-        }
-
         static Regex lastDigitsRegex = new Regex("([0-9])+$");
 
         public static string IncrementTag(string tag)
@@ -168,7 +149,104 @@ RUN chmod +x /root/build/ServerBuild
 
 ENTRYPOINT [ ""/root/build/ServerBuild"", ""-batchmode"", ""-nographics""]
 ";
-
         
+        public static async Task DockerBuild(
+            string registry,
+            string imageRepo,
+            string tag,
+            Action<string> onStatusUpdate)
+        {
+            string realErrorMessage = null;
+            string args = $"build -t {registry}/{imageRepo}:{tag} .";
+            await RunCommand("docker.exe", args, onStatusUpdate,
+                (msg) =>
+                {
+                    if (msg.Contains("ERROR"))
+                    {
+                        realErrorMessage = msg;
+                    }
+                    onStatusUpdate(msg);
+                });
+
+            if(realErrorMessage != null)
+            {
+                throw new Exception(realErrorMessage);
+            }
+        }
+
+        /// <returns>isSuccess</returns>
+        public static async Task<bool> DockerPush(
+            string registry, 
+            string imageRepo, 
+            string tag, 
+            Action<string> onStatusUpdate)
+        {
+            string error = string.Empty;
+            string args = $"push {registry}/{imageRepo}:{tag}";
+            await RunCommand("docker.exe", args, onStatusUpdate, (msg) => 
+                error += $"{msg}\n");
+            
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogError(error);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>Run a Docker cmd with streaming log response. TODO: Plugin to other Docker cmds</summary>
+        /// <returns>Throws if logs contain "ERROR"</returns>
+        private static async Task runDockerCommand(string args, Action<string> onStatusUpdate)
+        {
+            string realErrorMessage = null;
+            await RunCommand(
+                "docker.exe",
+                args,
+                onStatusUpdate,
+                msg =>
+                {
+                    if (msg.Contains("ERROR"))
+                        realErrorMessage = msg;
+                    
+                    onStatusUpdate(msg);
+                });
+
+            if (realErrorMessage != null)
+                throw new Exception(realErrorMessage);
+        }
+
+        /// <summary>
+        /// v2: Login to Docker Registry via RunCommand(), returning streamed log messages:
+        /// "docker login {registryUrl} {repository} {repoUsername} {repoPasswordToken}"
+        /// </summary>
+        /// <param name="registryUrl">ex: "registry.edgegap.com"</param>
+        /// <param name="repoUsername">ex: "robot$mycompany-asdf+client-push"</param>
+        /// <param name="repoPasswordToken">Different from ApiToken; sometimes called "Container Registry Password"</param>
+        /// <param name="onStatusUpdate">Log stream</param>
+        /// <returns>isSuccess</returns>
+        public static async Task<bool> LoginContainerRegistry(
+            string registryUrl,
+            string repoUsername,
+            string repoPasswordToken,
+            Action<string> onStatusUpdate)
+        {
+            // TODO: Use --password-stdin for security (!) This is no easy task for child Process | https://stackoverflow.com/q/51489359/6541639
+            // (!) Don't use single quotes for cross-platform support (works unexpectedly in `cmd`).
+            string args = $"login -u \"{repoUsername}\" --password \"{repoPasswordToken}\" \"{registryUrl}\"";
+
+            try
+            {
+                await runDockerCommand(args, msg =>
+                    onStatusUpdate($"[LoginContainerRegistry] {msg}"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error: {e}");
+                return false;
+            }
+            
+            return true;
+        }
+
     }
 }

@@ -3,6 +3,19 @@
 Source Code for Unity Plugin for Edgegap Integration
 More information can be found on [Edgegap Documentation](https://docs.edgegap.com/docs/tools-and-integrations/unity-plugin)
 
+# v2
+
+This fork introduces an improved UI for the Edgegap Manager:
+
+![Edgegap Settings Manager](https://i.imgur.com/ttH338r.png)
+
+**Not Yet Implemented:**
+
+1. Build & Push button click
+2. Deployments group
+3. Persistence
+4. Manage existing apps
+
 ## Installing the package
 
 ### From Unity store

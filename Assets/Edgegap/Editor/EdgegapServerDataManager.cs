@@ -79,7 +79,7 @@ namespace Edgegap
     /// </summary>
     public static class EdgegapServerDataManager
     {
-        private static Status _serverData;
+        internal static Status _serverData;
         private static ApiEnvironment _apiEnvironment;
 
         // UI elements

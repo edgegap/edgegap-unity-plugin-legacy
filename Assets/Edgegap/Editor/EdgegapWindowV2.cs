@@ -93,6 +93,7 @@ namespace Edgegap.Editor
         private TextField _deploymentsConnectionUrlReadonlyInput;
         private Label _deploymentsConnectionStatusLabel;
         private Button _deploymentsConnectionStopBtn;
+        private Button _deploymentsConnectionContainerLogsBtn;
 
         private Button _footerDocumentationBtn;
         private Button _footerNeedMoreGameServersBtn;
@@ -223,6 +224,7 @@ namespace Edgegap.Editor
             _deploymentsConnectionUrlReadonlyInput = rootVisualElement.Q<TextField>(EdgegapWindowMetadata.DEPLOYMENTS_CONNECTION_URL_READONLY_TXT_ID);
             _deploymentsConnectionStatusLabel = rootVisualElement.Q<Label>(EdgegapWindowMetadata.DEPLOYMENTS_CONNECTION_STATUS_LABEL_ID);
             _deploymentsConnectionStopBtn = rootVisualElement.Q<Button>(EdgegapWindowMetadata.DEPLOYMENTS_CONNECTION_SERVER_ACTION_STOP_BTN_ID);
+            _deploymentsConnectionContainerLogsBtn = rootVisualElement.Q<Button>(EdgegapWindowMetadata.DEPLOYMENTS_CONNECTION_CONTAINER_LOGS_BTN_ID);
 
             _footerDocumentationBtn = rootVisualElement.Q<Button>(EdgegapWindowMetadata.FOOTER_DOCUMENTATION_BTN_ID);
             _footerNeedMoreGameServersBtn = rootVisualElement.Q<Button>(EdgegapWindowMetadata.FOOTER_NEED_MORE_GAME_SERVERS_BTN_ID);
@@ -448,13 +450,18 @@ namespace Edgegap.Editor
 
             // We found some leftover connection cache >>
             _deploymentsConnectionStopBtn.visible = true;
+            _deploymentsConnectionContainerLogsBtn.visible = true;
             _deploymentsRefreshBtn.SetEnabled(true);
 
             // Enable stop btn?
             bool isDeployed = _deploymentsConnectionStatusLabel.text.ToLowerInvariant().Contains("deployed");
             _deploymentsConnectionStopBtn.SetEnabled(isDeployed);
+            _deploymentsConnectionContainerLogsBtn.SetEnabled(isDeployed);
             if (isDeployed)
+            {
                 _deploymentsConnectionStopBtn.clickable.clickedWithEventInfo += onDynamicStopServerBtnAsync; // Unsub'd from within
+                _deploymentsConnectionContainerLogsBtn.clickable.clickedWithEventInfo += onDynamicContainerLogsBtnAsync;
+            }
         }
 
         /// <summary>For example, result labels (success/err) should be hidden on init</summary>
@@ -1143,6 +1150,8 @@ namespace Edgegap.Editor
             _deploymentsStatusLabel.style.display = DisplayStyle.None;
             _deploymentsConnectionStopBtn.SetEnabled(false);
             _deploymentsConnectionStopBtn.visible = true;
+            _deploymentsConnectionContainerLogsBtn.SetEnabled(false);
+            _deploymentsConnectionContainerLogsBtn.visible = true;
         }
 
         /// <summary>Don't use this if you want to keep the last-known connection info.</summary>
@@ -1151,6 +1160,7 @@ namespace Edgegap.Editor
             _deploymentsConnectionUrlReadonlyInput.value = "";
             _deploymentsConnectionStatusLabel.text = "";
             _deploymentsConnectionStopBtn.visible = false;
+            _deploymentsConnectionContainerLogsBtn.visible = false;
             _deploymentsRefreshBtn.SetEnabled(false);
         }
 
@@ -1260,6 +1270,10 @@ namespace Edgegap.Editor
             _deploymentsConnectionStopBtn.clickable.clickedWithEventInfo += onDynamicStopServerBtnAsync; // Unsubscribes on click
             _deploymentsConnectionStopBtn.visible = true;
             _deploymentsConnectionStopBtn.SetEnabled(true);
+            _deploymentsConnectionContainerLogsBtn.clickable.clickedWithEventInfo -= onDynamicContainerLogsBtnAsync; // Ensures there is only ever one event listener
+            _deploymentsConnectionContainerLogsBtn.clickable.clickedWithEventInfo += onDynamicContainerLogsBtnAsync;
+            _deploymentsConnectionContainerLogsBtn.visible = true;
+            _deploymentsConnectionContainerLogsBtn.SetEnabled(true);
 
             // Show refresh btn (currently targeting only this one)
             _deploymentsRefreshBtn.SetEnabled(true);
@@ -1291,6 +1305,7 @@ namespace Edgegap.Editor
         private void onDynamicStopServerBtnAsync(EventBase evt) =>
             _ = onDynamicStopServerAsync();
 
+
         /// <summary>
         /// Stops the deployment, updating the UI accordingly.
         /// TODO: Cache a list of deployments and/or store a hidden field for requestId.
@@ -1301,6 +1316,7 @@ namespace Edgegap.Editor
             if (IsLogLevelDebug) Debug.Log("onDynamicStopServerAsync");
             hideResultLabels();
             _deploymentsConnectionStopBtn.SetEnabled(false);
+            _deploymentsConnectionContainerLogsBtn.SetEnabled(false);
             _deploymentsRefreshBtn.SetEnabled(false);
             _deploymentsConnectionStatusLabel.text = EdgegapWindowMetadata.WrapRichTextInColor(
                 "<i>Requesting Stop...</i>", EdgegapWindowMetadata.StatusColors.Processing);
@@ -1330,6 +1346,7 @@ namespace Edgegap.Editor
             finally
             {
                 _deploymentsConnectionStopBtn.clickable.clickedWithEventInfo -= onDynamicStopServerBtnAsync;
+                _deploymentsConnectionContainerLogsBtn.clickable.clickedWithEventInfo -= onDynamicContainerLogsBtnAsync;
             }
 
             bool isStopSuccess = stopResponse.IsResultCode410;
@@ -1344,6 +1361,26 @@ namespace Edgegap.Editor
             string stoppedStr = getConnectionStoppedRichStr();
             _deploymentsStatusLabel.text = ""; // Overrides any previous errs, in case we attempted to created a new deployment while deleting
             setPersistDeploymentsConnectionStatusLabelTxt(stoppedStr);
+        }
+
+        /// <summary>
+        /// This is triggered from a dynamic button, so we need to pass in the event info (TODO: Use evt info later).
+        /// </summary>
+        /// <param name="evt"></param>
+        private void onDynamicContainerLogsBtnAsync(EventBase evt) =>
+            _ = onDynamicContainerLogsAsync();
+
+        /// <summary>
+        /// Links to the container logs page, updating the UI accordingly.
+        /// </summary>
+        private Task onDynamicContainerLogsAsync()
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = String.Format("https://app.edgegap.com/deployment-management/deployments/{0}/details?tab=logs", _deploymentRequestId),
+                UseShellExecute = true
+            });
+            return Task.CompletedTask;
         }
 
         private string getConnectionStoppedRichStr() =>

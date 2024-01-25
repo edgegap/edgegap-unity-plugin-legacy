@@ -61,7 +61,7 @@ namespace Edgegap.Editor.Api.Models.Requests
         #endregion // (!) Shows in API docs for PATCH, but could be CREATE only? "Unknown Args"
        
         [JsonProperty("max_duration")]
-        public int MaxDuration { get; set; } = 30;
+        public int MaxDuration { get; set; } = 60;
        
         [JsonProperty("use_telemetry")]
         public bool UseTelemetry { get; set; } = true;

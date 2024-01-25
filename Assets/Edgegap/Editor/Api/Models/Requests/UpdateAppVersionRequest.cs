@@ -82,7 +82,7 @@ namespace Edgegap.Editor.Api.Models.Requests
         public int CacheMaxHour { get; set; }
        
         [JsonProperty("time_to_deploy")]
-        public int TimeToDeploy { get; set; } = 15;
+        public int TimeToDeploy { get; set; } = 120;
        
         [JsonProperty("enable_all_locations")]
         public bool EnableAllLocations { get; set; }

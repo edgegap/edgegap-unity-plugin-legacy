@@ -70,7 +70,7 @@ namespace Edgegap.Editor.Api.Models.Requests
         public bool InjectContextEnv { get; set; } = true;
        
         [JsonProperty("whitelisting_active")]
-        public bool WhitelistingActive { get; set; } = true;
+        public bool WhitelistingActive { get; set; } = false;
        
         [JsonProperty("force_cache")]
         public bool ForceCache { get; set; }

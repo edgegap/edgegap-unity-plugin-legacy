@@ -159,6 +159,7 @@ namespace Edgegap.Editor
         public const string DEPLOYMENTS_CONNECTION_URL_READONLY_TXT_ID = "DeploymentConnectionUrlReadOnlyTxt"; // Dynamic
         public const string DEPLOYMENTS_CONNECTION_STATUS_LABEL_ID = "DeploymentsConnectionStatusLabel"; // Dynamic
         public const string DEPLOYMENTS_CONNECTION_SERVER_ACTION_STOP_BTN_ID = "DeploymentsConnectionServerStopBtn";
+        public const string DEPLOYMENTS_CONNECTION_CONTAINER_LOGS_BTN_ID = "DeploymentsConnectionContainerLogsBtn";
             
         public const string FOOTER_DOCUMENTATION_BTN_ID = "FooterDocumentationBtn";
         public const string FOOTER_NEED_MORE_GAME_SERVERS_BTN_ID = "FooterNeedMoreGameServersBtn";

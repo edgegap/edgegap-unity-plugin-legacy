@@ -20,8 +20,10 @@ This fork introduces an improved UI for the Edgegap Manager:
 
 ### From Unity store
 
-You can add to your Assets the latest published version from the [**Unity Asset Store**](https://assetstore.unity.com/packages/tools/network/edgegap-cloud-server-212563)
-and import it with the Package Manager under `Window > Package Manager` then selecting `My Assets` as the source.
+~~You can add to your Assets the latest published version from the [**Unity Asset Store**](https://assetstore.unity.com/packages/tools/network/edgegap-cloud-server-212563)
+and import it with the Package Manager under `Window > Package Manager` then selecting `My Assets` as the source.~~
+
+Asset store version is temporarily out of order, we apologize for the inconvenience. Stay tuned for updates.
 
 ### From Source
 

@@ -122,6 +122,7 @@ namespace Edgegap.Editor
         public const string DEPLOYMENT_REQUEST_ID_KEY_STR = "DeploymentRequestId";
         public const string DEPLOYMENT_CONNECTION_URL_KEY_STR = "DeploymentConnectionUrlLabel";
         public const string DEPLOYMENT_CONNECTION_STATUS_KEY_STR = "DeploymentsConnectionStatusLabel";
+        public const string CONTAINER_REGISTRY_TRANSPORT_TYPE_ENUM_KEY_STR = "ContainerRegistryProtocolTypeEnum";
         #endregion // Editor Pref Key Ids for persistence
         
         #region UI Element Ids

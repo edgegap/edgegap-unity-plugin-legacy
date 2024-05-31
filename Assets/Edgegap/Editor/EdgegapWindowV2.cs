@@ -970,7 +970,8 @@ namespace Edgegap.Editor
         private void openGetApiTokenWebsite()
         {
             if (IsLogLevelDebug) Debug.Log("openGetApiTokenWebsite");
-            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_GET_A_TOKEN_URL);
+            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_GET_A_TOKEN_URL + "&" + 
+                                EdgegapWindowMetadata.DEFAULT_UTM_TAGS);
         }
 
         /// <returns>isSuccess; sets _isContainerRegistryReady + _loadedApp</returns>
@@ -1089,11 +1090,13 @@ namespace Edgegap.Editor
 
         /// <summary>Open contact form in desired locale</summary>
         private void openNeedMoreGameServersWebsite() =>
-            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_ADD_MORE_GAME_SERVERS_URL);
+            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_ADD_MORE_GAME_SERVERS_URL + "?" + 
+                                EdgegapWindowMetadata.DEFAULT_UTM_TAGS);
 
         private void openDocumentationWebsite()
         {
-            string documentationUrl = _apiEnvironment.GetDocumentationUrl();
+            string documentationUrl = _apiEnvironment.GetDocumentationUrl() + "?" + 
+                                      EdgegapWindowMetadata.DEFAULT_UTM_TAGS;
 
             if (!string.IsNullOrEmpty(documentationUrl))
                 Application.OpenURL(documentationUrl);

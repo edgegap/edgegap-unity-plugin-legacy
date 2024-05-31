@@ -63,7 +63,12 @@ namespace Edgegap.Editor
         public const string EDGEGAP_GET_A_TOKEN_URL = "https://app.edgegap.com/?oneClick=true";
         public const string EDGEGAP_ADD_MORE_GAME_SERVERS_URL = "https://edgegap.com/en/resources/contact";
         public const string EDGEGAP_DOC_BTN_HOW_TO_LOGIN_VIA_CLI_URL = "https://docs.edgegap.com/docs/container/edgegap-container-registry/#getting-your-credentials";
-        public const string DEFAULT_UTM_TAGS = "utm_source=github&utm_medium=servers_quickstart_plugin&utm_content=plugin_link";
+        private const string DEFAULT_UTM_SOURCE_TAG = "github";
+        private const string DEFAULT_UTM_MEDIUM_TAG = "servers_quickstart_plugin";
+        private const string DEFAULT_UTM_CONTENT_TAG = "plugin_link";
+        public const string DEFAULT_UTM_TAGS = "utm_source=" + DEFAULT_UTM_SOURCE_TAG +
+                                               "&utm_medium=" + DEFAULT_UTM_MEDIUM_TAG +
+                                               "&utm_content=" + DEFAULT_UTM_CONTENT_TAG;
         public const string DEFAULT_VERSION_TAG = "latest";
         public const string LOADING_RICH_STR = "<i>Loading...</i>";
         public const string PROCESSING_RICH_STR = "<i>Processing...</i>";

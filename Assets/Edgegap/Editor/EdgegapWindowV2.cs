@@ -204,7 +204,9 @@ namespace Edgegap.Editor
             // this finds the placeholder and dynamically replaces it with a popup field
             VisualElement dropdownPlaceholder = rootVisualElement.Q<VisualElement>("MIRROR_CHANGE_PORT_HARDCODED");
             List<string> options = Enum.GetNames(typeof(ProtocolType)).Cast<string>().ToList();
-            _containerTransportTypeEnumInput = new PopupField<string>("Protocol Type", options, 0);
+            string containerTransportTypeEnum = EditorPrefs.GetString(EdgegapWindowMetadata.CONTAINER_REGISTRY_TRANSPORT_TYPE_ENUM_KEY_STR);
+            Enum.TryParse(containerTransportTypeEnum, out ProtocolType currentProtocolType);
+            _containerTransportTypeEnumInput = new PopupField<string>("Protocol Type", options, (int)currentProtocolType);
             dropdownPlaceholder.Add(_containerTransportTypeEnumInput);
             // END MIRROR CHANGE
             _containerUseCustomRegistryToggle = rootVisualElement.Q<Toggle>(EdgegapWindowMetadata.CONTAINER_USE_CUSTOM_REGISTRY_TOGGLE_ID);
@@ -366,6 +368,7 @@ namespace Edgegap.Editor
 
             _appNameInput.RegisterValueChangedCallback(onAppNameInputChanged);
             _containerPortNumInput.RegisterCallback<FocusOutEvent>(onContainerPortNumInputFocusOut);
+            _containerTransportTypeEnumInput.RegisterValueChangedCallback(onContainerTransportTypeEnumInputChanged);
 
             _containerUseCustomRegistryToggle.RegisterValueChangedCallback(onContainerUseCustomRegistryToggle);
             _containerNewTagVersionInput.RegisterValueChangedCallback(onContainerNewTagVersionInputChanged);
@@ -691,6 +694,15 @@ namespace Edgegap.Editor
         }
 
         /// <summary>
+        /// Save the protocol type after it has been changed.
+        /// </summary>
+        /// <param name="evt"></param>
+        private void onContainerTransportTypeEnumInputChanged(ChangeEvent<string> evt)
+        {
+            EditorPrefs.SetString(EdgegapWindowMetadata.CONTAINER_REGISTRY_TRANSPORT_TYPE_ENUM_KEY_STR, evt.newValue);
+        }
+
+        /// <summary>
         /// While changing the token, we temporarily unmask. On change, set state to !verified.
         /// </summary>
         /// <param name="evt"></param>
@@ -970,7 +982,8 @@ namespace Edgegap.Editor
         private void openGetApiTokenWebsite()
         {
             if (IsLogLevelDebug) Debug.Log("openGetApiTokenWebsite");
-            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_GET_A_TOKEN_URL);
+            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_GET_A_TOKEN_URL + "&" + 
+                                EdgegapWindowMetadata.DEFAULT_UTM_TAGS);
         }
 
         /// <returns>isSuccess; sets _isContainerRegistryReady + _loadedApp</returns>
@@ -1089,11 +1102,13 @@ namespace Edgegap.Editor
 
         /// <summary>Open contact form in desired locale</summary>
         private void openNeedMoreGameServersWebsite() =>
-            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_ADD_MORE_GAME_SERVERS_URL);
+            Application.OpenURL(EdgegapWindowMetadata.EDGEGAP_ADD_MORE_GAME_SERVERS_URL + "?" + 
+                                EdgegapWindowMetadata.DEFAULT_UTM_TAGS);
 
         private void openDocumentationWebsite()
         {
-            string documentationUrl = _apiEnvironment.GetDocumentationUrl();
+            string documentationUrl = _apiEnvironment.GetDocumentationUrl() + "?" + 
+                                      EdgegapWindowMetadata.DEFAULT_UTM_TAGS;
 
             if (!string.IsNullOrEmpty(documentationUrl))
                 Application.OpenURL(documentationUrl);
